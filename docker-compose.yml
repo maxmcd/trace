@@ -1,0 +1,17 @@
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server
+    hostname: clickhouse
+    volumes:
+      # Set the *.sql folder as the folder of post-init files
+      # src: https://hub.docker.com/r/clickhouse/clickhouse-server/
+      #      -> "How to extend this image"
+      - ./db:/docker-entrypoint-initdb.d
+    environment:
+      - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
+      - CLICKHOUSE_USER=default
+      - CLICKHOUSE_PASSWORD=password
+      - CLICKHOUSE_LOG_LEVEL=trace
+    ports:
+      - "8123:8123"
+      - "9000:9000"

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flame Graph View</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f0f0f0;
+      }
+      #flame-graph-container {
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        overflow: hidden;
+        width: 100%;
+      }
+      #flame-graph {
+        overflow-x: auto;
+        width: 100%;
+      }
+      svg {
+        display: block;
+        width: 100%;
+      }
+      .zoom-controls {
+        display: flex;
+        align-items: center;
+        padding: 8px;
+        border-top: 1px solid #ccc;
+      }
+      .zoom-bar {
+        background-color: #e0e0e0;
+        border-radius: 8px;
+        cursor: pointer;
+        height: 8px;
+        width: 80px;
+        position: relative;
+        margin: 0 8px;
+      }
+      .zoom-handle {
+        background-color: white;
+        border: 2px solid #333;
+        border-radius: 8px;
+        cursor: pointer;
+        height: 10px;
+        width: 10px;
+        position: absolute;
+        top: -3px;
+      }
+      button {
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        padding: 4px 8px;
+        margin: 0 4px;
+      }
+      .tooltip {
+        position: absolute;
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        padding: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: none;
+      }
+      .selection-rect {
+        fill: rgba(173, 216, 230, 0.3);
+        stroke: rgb(70, 130, 180);
+        stroke-width: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="flame-graph-container">
+      <div id="flame-graph"></div>
+      <div class="zoom-controls">
+        <button onclick="changeZoom(-0.1)">-</button>
+        <div class="zoom-bar" onclick="handleZoomBarClick(event)">
+          <div class="zoom-handle" id="zoom-handle"></div>
+        </div>
+        <button onclick="changeZoom(0.1)">+</button>
+        <button onclick="resetZoom()">Reset Zoom</button>
+      </div>
+    </div>
+    <div id="tooltip" class="tooltip"></div>
+
+    <script>
+      const SVG_NS = "http://www.w3.org/2000/svg";
+      const COLORS = [
+        "#f1c40f",
+        "#e67e22",
+        "#e74c3c",
+        "#9b59b6",
+        "#3498db",
+        "#2ecc71",
+        "#1abc9c",
+        "#34495e",
+        "#95a5a6",
+        "#d35400",
+        "#c0392b",
+        "#8e44ad",
+      ];
+      let zoom = 1;
+      let svgWidth = 0;
+      let svgHeight = 300;
+      const ticksHeight = 24;
+      const lineHeight = 20;
+
+      let traces = [];
+      let serviceColors = new Map();
+      let zoomStart = 0;
+      let zoomEnd = 1;
+      let firstTimestamp;
+
+      async function fetchData() {
+        try {
+          const response = await fetch("/data");
+          const data = await response.json();
+          firstTimestamp = Math.min(
+            ...data.map((span) => new Date(span.timestamp).getTime())
+          );
+          traces = data.map((span) => ({
+            ...span,
+            timestamp: new Date(span.timestamp).getTime(),
+            startTime:
+              (new Date(span.timestamp).getTime() - firstTimestamp) * 1000000,
+          }));
+          console.log(traces);
+          assignServiceColors();
+          createSVG();
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      }
+
+      function assignServiceColors() {
+        const services = new Set(traces.map((span) => span.serviceName));
+        let colorIndex = 0;
+        services.forEach((service) => {
+          serviceColors.set(service, COLORS[colorIndex % COLORS.length]);
+          colorIndex++;
+        });
+      }
+
+      function calculateDepth(spans) {
+        const traceGroups = new Map();
+        spans.forEach((span) => {
+          if (!traceGroups.has(span.traceID)) {
+            traceGroups.set(span.traceID, []);
+          }
+          traceGroups.get(span.traceID).push(span);
+        });
+
+        const depthMap = new Map();
+        let maxDepth = 0;
+        let traceOffset = 0;
+
+        Array.from(traceGroups.entries())
+          .sort(([, a], [, b]) => a[0].startTime - b[0].startTime)
+          .forEach(([traceID, traceSpans]) => {
+            const traceDepthMap = new Map();
+
+            function getDepth(spanID) {
+              if (traceDepthMap.has(spanID)) {
+                return traceDepthMap.get(spanID);
+              }
+
+              const span = traceSpans.find((s) => s.spanID === spanID);
+              if (!span || !span.parentSpanID) {
+                traceDepthMap.set(spanID, 0);
+                return 0;
+              }
+
+              const parentDepth = getDepth(span.parentSpanID);
+              const depth = parentDepth + 1;
+              traceDepthMap.set(spanID, depth);
+              return depth;
+            }
+
+            traceSpans.forEach((span) => {
+              const depth = getDepth(span.spanID) + traceOffset;
+              depthMap.set(span.spanID, depth);
+              maxDepth = Math.max(maxDepth, depth);
+            });
+
+            if (
+              traceOffset > 0 &&
+              traceSpans[0].startTime >
+                spans[spans.length - 1].startTime +
+                  spans[spans.length - 1].duration
+            ) {
+              traceOffset = 0;
+            } else {
+              traceOffset = maxDepth + 1;
+            }
+          });
+
+        return depthMap;
+      }
+
+      function createSVG() {
+        const container = document.getElementById("flame-graph");
+        container.innerHTML = "";
+        svgWidth = container.clientWidth;
+        const svg = document.createElementNS(SVG_NS, "svg");
+        svg.setAttribute("width", svgWidth);
+        svg.setAttribute("height", svgHeight);
+        container.appendChild(svg);
+
+        const mainGroup = document.createElementNS(SVG_NS, "g");
+        svg.appendChild(mainGroup);
+
+        drawTimeline(mainGroup);
+        drawTraces(mainGroup);
+
+        svg.addEventListener("mousemove", handleMouseMove);
+        svg.addEventListener("mouseout", hideTooltip);
+        svg.addEventListener("mousedown", startSelection);
+        svg.addEventListener("dblclick", resetZoom);
+      }
+
+      function drawTimeline(svg) {
+        const line = document.createElementNS(SVG_NS, "line");
+        line.setAttribute("x1", 0);
+        line.setAttribute("y1", ticksHeight);
+        line.setAttribute("x2", svgWidth);
+        line.setAttribute("y2", ticksHeight);
+        line.setAttribute("stroke", "#e4e2e4");
+        svg.appendChild(line);
+
+        const totalDuration = traces.reduce(
+          (max, span) => Math.max(max, span.startTime + span.duration),
+          0
+        );
+        const numTicks = 5;
+        for (let i = 0; i <= numTicks; i++) {
+          const tick = document.createElementNS(SVG_NS, "g");
+          const x = (i / numTicks) * svgWidth;
+
+          const tickLine = document.createElementNS(SVG_NS, "line");
+          tickLine.setAttribute("x1", x);
+          tickLine.setAttribute("y1", ticksHeight - 8);
+          tickLine.setAttribute("x2", x);
+          tickLine.setAttribute("y2", ticksHeight - 2);
+          tickLine.setAttribute("stroke", "#e4e2e4");
+          tick.appendChild(tickLine);
+
+          const text = document.createElementNS(SVG_NS, "text");
+          text.setAttribute("x", x);
+          text.setAttribute("y", 12);
+          text.setAttribute("fill", "#6f6e77");
+          text.setAttribute("font-size", 10);
+          text.setAttribute(
+            "text-anchor",
+            i === 0 ? "start" : i === numTicks ? "end" : "middle"
+          );
+          const time = zoomStart + (i / numTicks) * (zoomEnd - zoomStart);
+          text.textContent = `${Math.round(
+            (time * totalDuration) / 1000 / 1000
+          )}ms`;
+          tick.appendChild(text);
+
+          svg.appendChild(tick);
+        }
+      }
+
+      function drawTraces(svg) {
+        const depthMap = calculateDepth(traces);
+        const maxDepth = Math.max(...depthMap.values());
+        svgHeight = ticksHeight + (maxDepth + 1) * (lineHeight + 4);
+        svg.parentElement.setAttribute("height", svgHeight);
+
+        const totalDuration = traces.reduce(
+          (max, span) => Math.max(max, span.startTime + span.duration),
+          0
+        );
+
+        traces.forEach((span) => {
+          const depth = depthMap.get(span.spanID);
+          const rect = document.createElementNS(SVG_NS, "rect");
+          const startRatio = span.startTime / totalDuration;
+          const durationRatio = span.duration / totalDuration;
+
+          if (startRatio + durationRatio < zoomStart || startRatio > zoomEnd)
+            return;
+
+          const x =
+            ((Math.max(startRatio, zoomStart) - zoomStart) /
+              (zoomEnd - zoomStart)) *
+            svgWidth;
+          const width =
+            ((Math.min(startRatio + durationRatio, zoomEnd) -
+              Math.max(startRatio, zoomStart)) /
+              (zoomEnd - zoomStart)) *
+            svgWidth;
+
+          rect.setAttribute("x", x);
+          rect.setAttribute("y", ticksHeight + depth * (lineHeight + 4));
+          rect.setAttribute("width", width);
+          rect.setAttribute("height", lineHeight);
+          rect.setAttribute("fill", serviceColors.get(span.serviceName));
+          rect.setAttribute("data-span", JSON.stringify({ ...span, depth }));
+          svg.appendChild(rect);
+
+          const text = document.createElementNS(SVG_NS, "text");
+          text.setAttribute("x", x + 5);
+          text.setAttribute("y", ticksHeight + depth * (lineHeight + 4) + 14);
+          text.setAttribute("fill", "black");
+          text.setAttribute("font-size", 12);
+          text.textContent = span.spanName;
+          text.setAttribute("data-span", JSON.stringify({ ...span, depth }));
+
+          const clipPath = document.createElementNS(SVG_NS, "clipPath");
+          const clipPathId = `clip-${span.spanID}`;
+          clipPath.setAttribute("id", clipPathId);
+          const clipRect = rect.cloneNode();
+          clipPath.appendChild(clipRect);
+          svg.appendChild(clipPath);
+
+          text.setAttribute("clip-path", `url(#${clipPathId})`);
+          svg.appendChild(text);
+        });
+      }
+
+      function handleMouseMove(event) {
+        const tooltip = document.getElementById("tooltip");
+        const span = event.target.getAttribute("data-span");
+        if (span) {
+          const spanData = JSON.parse(span);
+          tooltip.innerHTML = `
+            <strong>${spanData.spanName}</strong><br>
+            Service: ${spanData.serviceName}<br>
+            Duration: ${spanData.duration / 1000 / 1000}ms<br>
+            Depth: ${spanData.depth}<br>
+            StartTime: ${spanData.startTime}<br>
+            Trace ID: ${spanData.traceID}<br>
+            Span ID: ${spanData.spanID}
+          `;
+          tooltip.style.display = "block";
+          tooltip.style.left = `${event.pageX + 10}px`;
+          tooltip.style.top = `${event.pageY + 10}px`;
+        } else {
+          hideTooltip();
+        }
+      }
+
+      function hideTooltip() {
+        const tooltip = document.getElementById("tooltip");
+        tooltip.style.display = "none";
+      }
+
+      let isSelecting = false;
+      let selectionStart = { x: 0, y: 0 };
+      let selectionRect;
+
+      function startSelection(event) {
+        isSelecting = true;
+        const svg = event.target.closest("svg");
+        const pt = svg.createSVGPoint();
+        pt.x = event.clientX;
+        pt.y = event.clientY;
+        const svgPt = pt.matrixTransform(svg.getScreenCTM().inverse());
+        selectionStart = { x: svgPt.x, y: svgPt.y };
+
+        selectionRect = document.createElementNS(SVG_NS, "rect");
+        selectionRect.setAttribute("class", "selection-rect");
+        selectionRect.setAttribute("x", selectionStart.x);
+        selectionRect.setAttribute("y", selectionStart.y);
+        svg.appendChild(selectionRect);
+
+        document.addEventListener("mousemove", updateSelection);
+        document.addEventListener("mouseup", endSelection);
+      }
+
+      function updateSelection(event) {
+        if (!isSelecting) return;
+        const svg = document.querySelector("#flame-graph svg");
+        const pt = svg.createSVGPoint();
+        pt.x = event.clientX;
+        pt.y = event.clientY;
+        const svgPt = pt.matrixTransform(svg.getScreenCTM().inverse());
+
+        const x = Math.min(selectionStart.x, svgPt.x);
+        const y = Math.min(selectionStart.y, svgPt.y);
+        const width = Math.abs(svgPt.x - selectionStart.x);
+        const height = Math.abs(svgPt.y - selectionStart.y);
+
+        selectionRect.setAttribute("x", x);
+        selectionRect.setAttribute("y", y);
+        selectionRect.setAttribute("width", width);
+        selectionRect.setAttribute("height", height);
+      }
+
+      function endSelection(event) {
+        if (!isSelecting) return;
+        isSelecting = false;
+        document.removeEventListener("mousemove", updateSelection);
+        document.removeEventListener("mouseup", endSelection);
+
+        const svg = document.querySelector("#flame-graph svg");
+        const pt = svg.createSVGPoint();
+        pt.x = event.clientX;
+        pt.y = event.clientY;
+        const svgPt = pt.matrixTransform(svg.getScreenCTM().inverse());
+
+        const x1 = selectionStart.x / svgWidth;
+        const x2 = svgPt.x / svgWidth;
+        const selectionWidth = Math.abs(x2 - x1);
+
+        if (selectionWidth > 0.01) {
+          // Minimum selection width to trigger zoom
+          const newZoomStart =
+            zoomStart + Math.min(x1, x2) * (zoomEnd - zoomStart);
+          const newZoomEnd =
+            newZoomStart + selectionWidth * (zoomEnd - zoomStart);
+          zoomStart = newZoomStart;
+          zoomEnd = newZoomEnd;
+          zoom = 1 / selectionWidth;
+          updateZoomHandle();
+          createSVG();
+        }
+
+        svg.removeChild(selectionRect);
+      }
+
+      function changeZoom(delta) {
+        const zoomCenter = (zoomStart + zoomEnd) / 2;
+        const zoomRange = zoomEnd - zoomStart;
+        const newZoomRange = zoomRange * (1 - delta);
+        zoomStart = Math.max(0, zoomCenter - newZoomRange / 2);
+        zoomEnd = Math.min(1, zoomCenter + newZoomRange / 2);
+        zoom = 1 / (zoomEnd - zoomStart);
+        updateZoomHandle();
+        createSVG();
+      }
+
+      function handleZoomBarClick(event) {
+        const zoomBar = event.currentTarget;
+        const rect = zoomBar.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        zoom = 1 + (x / rect.width) * 9; // 1 to 10
+        const zoomRange = 1 / zoom;
+        const zoomCenter = (zoomStart + zoomEnd) / 2;
+        zoomStart = Math.max(0, zoomCenter - zoomRange / 2);
+        zoomEnd = Math.min(1, zoomCenter + zoomRange / 2);
+        updateZoomHandle();
+        createSVG();
+      }
+
+      function updateZoomHandle() {
+        const handle = document.getElementById("zoom-handle");
+        const maxLeft = 70; // 70px is the width of the zoom bar minus the handle width
+        const left = Math.min(((zoom - 1) / 9) * maxLeft, maxLeft);
+        handle.style.left = `${left}px`;
+      }
+
+      function resetZoom() {
+        zoom = 1;
+        zoomStart = 0;
+        zoomEnd = 1;
+        updateZoomHandle();
+        createSVG();
+      }
+
+      // Initialize
+      fetchData();
+      updateZoomHandle();
+
+      // Add window resize event listener
+      window.addEventListener("resize", () => {
+        createSVG();
+      });
+    </script>
+  </body>
+</html>

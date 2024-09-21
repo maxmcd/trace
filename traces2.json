@@ -1,0 +1,620 @@
+[
+  {
+    "timestamp": "2024-09-21T13:18:43.525Z",
+    "traceID": "05523cd8192c865586b161353147d15d",
+    "spanID": "a587da2498947e18",
+    "parentSpanID": "5fb2c36936cf80d6",
+    "projectID": 1344,
+    "secureSessionID": "",
+    "traceState": "",
+    "spanName": "resolve page components",
+    "spanKind": "Internal",
+    "duration": 241545,
+    "serviceName": "highlight-io-pino",
+    "serviceVersion": "git-sha",
+    "environment": "",
+    "hasErrors": false,
+    "traceAttributes": {
+      "next": {
+        "route": "/blog/[slug]",
+        "span_name": "resolve page components",
+        "span_type": "NextNodeServer.findPageComponents"
+      },
+      "process": {
+        "command": "/opt/rust/nodejs.js",
+        "executable": {
+          "name": "node",
+          "path": "/var/lang/bin/node"
+        },
+        "owner": "sbx_user1051",
+        "pid": "3",
+        "runtime": {
+          "description": "Node.js",
+          "name": "nodejs",
+          "version": "20.17.0"
+        }
+      },
+      "telemetry": {
+        "distro": {
+          "name": "@highlight-run/node",
+          "version": "3.9.3"
+        },
+        "sdk": {
+          "language": "nodejs",
+          "name": "opentelemetry",
+          "version": "1.26.0"
+        }
+      }
+    },
+    "startTime": 0,
+    "statusCode": "Unset",
+    "statusMessage": "",
+    "events": [],
+    "__typename": "Trace"
+  },
+  {
+    "timestamp": "2024-09-21T13:18:43.525Z",
+    "traceID": "05523cd8192c865586b161353147d15d",
+    "spanID": "5fb2c36936cf80d6",
+    "parentSpanID": "",
+    "projectID": 1344,
+    "secureSessionID": "",
+    "traceState": "",
+    "spanName": "GET /blog/[slug]",
+    "spanKind": "Server",
+    "duration": 363605333,
+    "serviceName": "highlight-io-pino",
+    "serviceVersion": "git-sha",
+    "environment": "",
+    "hasErrors": false,
+    "traceAttributes": {
+      "http": {
+        "method": "GET",
+        "route": "/blog/[slug]",
+        "status_code": "200",
+        "target": "/blog/ruby-logging-best-practices"
+      },
+      "next": {
+        "route": "/blog/[slug]",
+        "span_name": "GET /blog/[slug]",
+        "span_type": "BaseServer.handleRequest"
+      },
+      "process": {
+        "command": "/opt/rust/nodejs.js",
+        "executable": {
+          "name": "node",
+          "path": "/var/lang/bin/node"
+        },
+        "owner": "sbx_user1051",
+        "pid": "3",
+        "runtime": {
+          "description": "Node.js",
+          "name": "nodejs",
+          "version": "20.17.0"
+        }
+      },
+      "telemetry": {
+        "distro": {
+          "name": "@highlight-run/node",
+          "version": "3.9.3"
+        },
+        "sdk": {
+          "language": "nodejs",
+          "name": "opentelemetry",
+          "version": "1.26.0"
+        }
+      }
+    },
+    "startTime": 0,
+    "statusCode": "Unset",
+    "statusMessage": "",
+    "events": [],
+    "__typename": "Trace"
+  },
+  {
+    "timestamp": "2024-09-21T13:18:43.526Z",
+    "traceID": "05523cd8192c865586b161353147d15d",
+    "spanID": "951d8cbbd2f5c24b",
+    "parentSpanID": "aaa01f2f623ce0a0",
+    "projectID": 1344,
+    "secureSessionID": "",
+    "traceState": "",
+    "spanName": "fs readdir",
+    "spanKind": "Internal",
+    "duration": 747172,
+    "serviceName": "highlight-io-pino",
+    "serviceVersion": "git-sha",
+    "environment": "",
+    "hasErrors": false,
+    "traceAttributes": {
+      "process": {
+        "command": "/opt/rust/nodejs.js",
+        "executable": {
+          "name": "node",
+          "path": "/var/lang/bin/node"
+        },
+        "owner": "sbx_user1051",
+        "pid": "3",
+        "runtime": {
+          "description": "Node.js",
+          "name": "nodejs",
+          "version": "20.17.0"
+        }
+      },
+      "telemetry": {
+        "distro": {
+          "name": "@highlight-run/node",
+          "version": "3.9.3"
+        },
+        "sdk": {
+          "language": "nodejs",
+          "name": "opentelemetry",
+          "version": "1.26.0"
+        }
+      }
+    },
+    "startTime": 1000000,
+    "statusCode": "Unset",
+    "statusMessage": "",
+    "events": [],
+    "__typename": "Trace"
+  },
+  {
+    "timestamp": "2024-09-21T13:18:43.526Z",
+    "traceID": "05523cd8192c865586b161353147d15d",
+    "spanID": "aaa01f2f623ce0a0",
+    "parentSpanID": "5fb2c36936cf80d6",
+    "projectID": 1344,
+    "secureSessionID": "",
+    "traceState": "",
+    "spanName": "getStaticProps /blog/[slug]",
+    "spanKind": "Internal",
+    "duration": 239961444,
+    "serviceName": "highlight-io-pino",
+    "serviceVersion": "git-sha",
+    "environment": "",
+    "hasErrors": false,
+    "traceAttributes": {
+      "next": {
+        "route": "/blog/[slug]",
+        "span_name": "getStaticProps /blog/[slug]",
+        "span_type": "Render.getStaticProps"
+      },
+      "process": {
+        "command": "/opt/rust/nodejs.js",
+        "executable": {
+          "name": "node",
+          "path": "/var/lang/bin/node"
+        },
+        "owner": "sbx_user1051",
+        "pid": "3",
+        "runtime": {
+          "description": "Node.js",
+          "name": "nodejs",
+          "version": "20.17.0"
+        }
+      },
+      "telemetry": {
+        "distro": {
+          "name": "@highlight-run/node",
+          "version": "3.9.3"
+        },
+        "sdk": {
+          "language": "nodejs",
+          "name": "opentelemetry",
+          "version": "1.26.0"
+        }
+      }
+    },
+    "startTime": 1000000,
+    "statusCode": "Unset",
+    "statusMessage": "",
+    "events": [],
+    "__typename": "Trace"
+  },
+  {
+    "timestamp": "2024-09-21T13:18:43.527Z",
+    "traceID": "05523cd8192c865586b161353147d15d",
+    "spanID": "bcaf1bf6f018413c",
+    "parentSpanID": "aaa01f2f623ce0a0",
+    "projectID": 1344,
+    "secureSessionID": "",
+    "traceState": "",
+    "spanName": "fs stat",
+    "spanKind": "Internal",
+    "duration": 617150,
+    "serviceName": "highlight-io-pino",
+    "serviceVersion": "git-sha",
+    "environment": "",
+    "hasErrors": false,
+    "traceAttributes": {
+      "process": {
+        "command": "/opt/rust/nodejs.js",
+        "executable": {
+          "name": "node",
+          "path": "/var/lang/bin/node"
+        },
+        "owner": "sbx_user1051",
+        "pid": "3",
+        "runtime": {
+          "description": "Node.js",
+          "name": "nodejs",
+          "version": "20.17.0"
+        }
+      },
+      "telemetry": {
+        "distro": {
+          "name": "@highlight-run/node",
+          "version": "3.9.3"
+        },
+        "sdk": {
+          "language": "nodejs",
+          "name": "opentelemetry",
+          "version": "1.26.0"
+        }
+      }
+    },
+    "startTime": 2000000,
+    "statusCode": "Unset",
+    "statusMessage": "",
+    "events": [],
+    "__typename": "Trace"
+  },
+  {
+    "timestamp": "2024-09-21T13:18:43.527Z",
+    "traceID": "05523cd8192c865586b161353147d15d",
+    "spanID": "1d7046a35a73676e",
+    "parentSpanID": "aaa01f2f623ce0a0",
+    "projectID": 1344,
+    "secureSessionID": "",
+    "traceState": "",
+    "spanName": "fs readFile",
+    "spanKind": "Internal",
+    "duration": 467836,
+    "serviceName": "highlight-io-pino",
+    "serviceVersion": "git-sha",
+    "environment": "",
+    "hasErrors": false,
+    "traceAttributes": {
+      "process": {
+        "command": "/opt/rust/nodejs.js",
+        "executable": {
+          "name": "node",
+          "path": "/var/lang/bin/node"
+        },
+        "owner": "sbx_user1051",
+        "pid": "3",
+        "runtime": {
+          "description": "Node.js",
+          "name": "nodejs",
+          "version": "20.17.0"
+        }
+      },
+      "telemetry": {
+        "distro": {
+          "name": "@highlight-run/node",
+          "version": "3.9.3"
+        },
+        "sdk": {
+          "language": "nodejs",
+          "name": "opentelemetry",
+          "version": "1.26.0"
+        }
+      }
+    },
+    "startTime": 2000000,
+    "statusCode": "Unset",
+    "statusMessage": "",
+    "events": [],
+    "__typename": "Trace"
+  },
+  {
+    "timestamp": "2024-09-21T13:18:43.525Z",
+    "traceID": "15523cd8192c865586b161353147d15d",
+    "spanID": "b587da2498947e18",
+    "parentSpanID": "4fb2c36936cf80d6",
+    "projectID": 1344,
+    "secureSessionID": "",
+    "traceState": "",
+    "spanName": "resolve page components",
+    "spanKind": "Internal",
+    "duration": 241545,
+    "serviceName": "highlight-io-pino",
+    "serviceVersion": "git-sha",
+    "environment": "",
+    "hasErrors": false,
+    "traceAttributes": {
+      "next": {
+        "route": "/blog/[slug]",
+        "span_name": "resolve page components",
+        "span_type": "NextNodeServer.findPageComponents"
+      },
+      "process": {
+        "command": "/opt/rust/nodejs.js",
+        "executable": {
+          "name": "node",
+          "path": "/var/lang/bin/node"
+        },
+        "owner": "sbx_user1051",
+        "pid": "3",
+        "runtime": {
+          "description": "Node.js",
+          "name": "nodejs",
+          "version": "20.17.0"
+        }
+      },
+      "telemetry": {
+        "distro": {
+          "name": "@highlight-run/node",
+          "version": "3.9.3"
+        },
+        "sdk": {
+          "language": "nodejs",
+          "name": "opentelemetry",
+          "version": "1.26.0"
+        }
+      }
+    },
+    "startTime": 0,
+    "statusCode": "Unset",
+    "statusMessage": "",
+    "events": [],
+    "__typename": "Trace"
+  },
+  {
+    "timestamp": "2024-09-21T13:18:43.525Z",
+    "traceID": "15523cd8192c865586b161353147d15d",
+    "spanID": "4fb2c36936cf80d6",
+    "parentSpanID": "",
+    "projectID": 1344,
+    "secureSessionID": "",
+    "traceState": "",
+    "spanName": "GET /blog/[slug]",
+    "spanKind": "Server",
+    "duration": 363605333,
+    "serviceName": "highlight-io-pino",
+    "serviceVersion": "git-sha",
+    "environment": "",
+    "hasErrors": false,
+    "traceAttributes": {
+      "http": {
+        "method": "GET",
+        "route": "/blog/[slug]",
+        "status_code": "200",
+        "target": "/blog/ruby-logging-best-practices"
+      },
+      "next": {
+        "route": "/blog/[slug]",
+        "span_name": "GET /blog/[slug]",
+        "span_type": "BaseServer.handleRequest"
+      },
+      "process": {
+        "command": "/opt/rust/nodejs.js",
+        "executable": {
+          "name": "node",
+          "path": "/var/lang/bin/node"
+        },
+        "owner": "sbx_user1051",
+        "pid": "3",
+        "runtime": {
+          "description": "Node.js",
+          "name": "nodejs",
+          "version": "20.17.0"
+        }
+      },
+      "telemetry": {
+        "distro": {
+          "name": "@highlight-run/node",
+          "version": "3.9.3"
+        },
+        "sdk": {
+          "language": "nodejs",
+          "name": "opentelemetry",
+          "version": "1.26.0"
+        }
+      }
+    },
+    "startTime": 0,
+    "statusCode": "Unset",
+    "statusMessage": "",
+    "events": [],
+    "__typename": "Trace"
+  },
+  {
+    "timestamp": "2024-09-21T13:18:43.526Z",
+    "traceID": "15523cd8192c865586b161353147d15d",
+    "spanID": "951d8cbbd2f5c24b",
+    "parentSpanID": "baa01f2f623ce0a0",
+    "projectID": 1344,
+    "secureSessionID": "",
+    "traceState": "",
+    "spanName": "fs readdir",
+    "spanKind": "Internal",
+    "duration": 747172,
+    "serviceName": "highlight-io-pino",
+    "serviceVersion": "git-sha",
+    "environment": "",
+    "hasErrors": false,
+    "traceAttributes": {
+      "process": {
+        "command": "/opt/rust/nodejs.js",
+        "executable": {
+          "name": "node",
+          "path": "/var/lang/bin/node"
+        },
+        "owner": "sbx_user1051",
+        "pid": "3",
+        "runtime": {
+          "description": "Node.js",
+          "name": "nodejs",
+          "version": "20.17.0"
+        }
+      },
+      "telemetry": {
+        "distro": {
+          "name": "@highlight-run/node",
+          "version": "3.9.3"
+        },
+        "sdk": {
+          "language": "nodejs",
+          "name": "opentelemetry",
+          "version": "1.26.0"
+        }
+      }
+    },
+    "startTime": 1000000,
+    "statusCode": "Unset",
+    "statusMessage": "",
+    "events": [],
+    "__typename": "Trace"
+  },
+  {
+    "timestamp": "2024-09-21T13:18:43.526Z",
+    "traceID": "15523cd8192c865586b161353147d15d",
+    "spanID": "baa01f2f623ce0a0",
+    "parentSpanID": "4fb2c36936cf80d6",
+    "projectID": 1344,
+    "secureSessionID": "",
+    "traceState": "",
+    "spanName": "getStaticProps /blog/[slug]",
+    "spanKind": "Internal",
+    "duration": 239961444,
+    "serviceName": "highlight-io-pino",
+    "serviceVersion": "git-sha",
+    "environment": "",
+    "hasErrors": false,
+    "traceAttributes": {
+      "next": {
+        "route": "/blog/[slug]",
+        "span_name": "getStaticProps /blog/[slug]",
+        "span_type": "Render.getStaticProps"
+      },
+      "process": {
+        "command": "/opt/rust/nodejs.js",
+        "executable": {
+          "name": "node",
+          "path": "/var/lang/bin/node"
+        },
+        "owner": "sbx_user1051",
+        "pid": "3",
+        "runtime": {
+          "description": "Node.js",
+          "name": "nodejs",
+          "version": "20.17.0"
+        }
+      },
+      "telemetry": {
+        "distro": {
+          "name": "@highlight-run/node",
+          "version": "3.9.3"
+        },
+        "sdk": {
+          "language": "nodejs",
+          "name": "opentelemetry",
+          "version": "1.26.0"
+        }
+      }
+    },
+    "startTime": 1000000,
+    "statusCode": "Unset",
+    "statusMessage": "",
+    "events": [],
+    "__typename": "Trace"
+  },
+  {
+    "timestamp": "2024-09-21T13:18:43.527Z",
+    "traceID": "15523cd8192c865586b161353147d15d",
+    "spanID": "bcaf1bf6f018413c",
+    "parentSpanID": "baa01f2f623ce0a0",
+    "projectID": 1344,
+    "secureSessionID": "",
+    "traceState": "",
+    "spanName": "fs stat",
+    "spanKind": "Internal",
+    "duration": 617150,
+    "serviceName": "highlight-io-pino",
+    "serviceVersion": "git-sha",
+    "environment": "",
+    "hasErrors": false,
+    "traceAttributes": {
+      "process": {
+        "command": "/opt/rust/nodejs.js",
+        "executable": {
+          "name": "node",
+          "path": "/var/lang/bin/node"
+        },
+        "owner": "sbx_user1051",
+        "pid": "3",
+        "runtime": {
+          "description": "Node.js",
+          "name": "nodejs",
+          "version": "20.17.0"
+        }
+      },
+      "telemetry": {
+        "distro": {
+          "name": "@highlight-run/node",
+          "version": "3.9.3"
+        },
+        "sdk": {
+          "language": "nodejs",
+          "name": "opentelemetry",
+          "version": "1.26.0"
+        }
+      }
+    },
+    "startTime": 2000000,
+    "statusCode": "Unset",
+    "statusMessage": "",
+    "events": [],
+    "__typename": "Trace"
+  },
+  {
+    "timestamp": "2024-09-21T13:18:43.527Z",
+    "traceID": "15523cd8192c865586b161353147d15d",
+    "spanID": "1d7046a35a73676e",
+    "parentSpanID": "baa01f2f623ce0a0",
+    "projectID": 1344,
+    "secureSessionID": "",
+    "traceState": "",
+    "spanName": "fs readFile",
+    "spanKind": "Internal",
+    "duration": 467836,
+    "serviceName": "highlight-io-pino",
+    "serviceVersion": "git-sha",
+    "environment": "",
+    "hasErrors": false,
+    "traceAttributes": {
+      "process": {
+        "command": "/opt/rust/nodejs.js",
+        "executable": {
+          "name": "node",
+          "path": "/var/lang/bin/node"
+        },
+        "owner": "sbx_user1051",
+        "pid": "3",
+        "runtime": {
+          "description": "Node.js",
+          "name": "nodejs",
+          "version": "20.17.0"
+        }
+      },
+      "telemetry": {
+        "distro": {
+          "name": "@highlight-run/node",
+          "version": "3.9.3"
+        },
+        "sdk": {
+          "language": "nodejs",
+          "name": "opentelemetry",
+          "version": "1.26.0"
+        }
+      }
+    },
+    "startTime": 2000000,
+    "statusCode": "Unset",
+    "statusMessage": "",
+    "events": [],
+    "__typename": "Trace"
+  }
+]

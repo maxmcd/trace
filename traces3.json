@@ -1,0 +1,110 @@
+[
+  {
+    "duration": 22419309,
+    "parentSpanID": "a7bca827-8a77-4d6d-8ee3-3bfe60010d4d",
+    "serviceName": "test-service",
+    "spanID": "22ca9339-c664-423e-9988-41d2f10f20c8",
+    "spanName": "operation-3",
+    "timestamp": "2024-09-21T16:10:47.317092017Z",
+    "traceID": "07a15580-266b-4e3e-9587-8ec27eb3e8ce"
+  },
+  {
+    "duration": 46706930,
+    "parentSpanID": "a7bca827-8a77-4d6d-8ee3-3bfe60010d4d",
+    "serviceName": "test-service",
+    "spanID": "d680e308-a999-4aa1-b0f2-a8f6a337de9f",
+    "spanName": "operation-2",
+    "timestamp": "2024-09-21T16:10:47.317028688Z",
+    "traceID": "07a15580-266b-4e3e-9587-8ec27eb3e8ce"
+  },
+  {
+    "duration": 61304489,
+    "parentSpanID": "a7bca827-8a77-4d6d-8ee3-3bfe60010d4d",
+    "serviceName": "test-service",
+    "spanID": "7797ebd1-1784-45c2-a29f-96cc9ac4e6c6",
+    "spanName": "operation-1",
+    "timestamp": "2024-09-21T16:10:47.316963746Z",
+    "traceID": "07a15580-266b-4e3e-9587-8ec27eb3e8ce"
+  },
+  {
+    "duration": 61613605,
+    "parentSpanID": "0f11f4d0-dc89-4e32-b45b-60e3db81c452",
+    "serviceName": "test-service",
+    "spanID": "a7bca827-8a77-4d6d-8ee3-3bfe60010d4d",
+    "spanName": "root-operation",
+    "timestamp": "2024-09-21T16:10:47.316877155Z",
+    "traceID": "07a15580-266b-4e3e-9587-8ec27eb3e8ce"
+  },
+  {
+    "duration": 61767924,
+    "parentSpanID": null,
+    "serviceName": "test-service",
+    "spanID": "0f11f4d0-dc89-4e32-b45b-60e3db81c452",
+    "spanName": "GET http://localhost:8080/",
+    "timestamp": "2024-09-21T16:10:47.316839284Z",
+    "traceID": "07a15580-266b-4e3e-9587-8ec27eb3e8ce"
+  },
+  {
+    "duration": 24419447,
+    "parentSpanID": "92ff47fb-ef58-4e08-a129-acb4fabcca80",
+    "serviceName": "test-service",
+    "spanID": "6b84a5cf-284d-4940-827e-743a2883f214",
+    "spanName": "child-operation",
+    "timestamp": "2024-09-21T16:10:48.189965947Z",
+    "traceID": "fb0ff040-d904-4a80-9c73-29c9c589fdaa"
+  },
+  {
+    "duration": 34839746,
+    "parentSpanID": "825192da-eebc-49cc-bcac-78bb1e11338f",
+    "serviceName": "test-service",
+    "spanID": "92ff47fb-ef58-4e08-a129-acb4fabcca80",
+    "spanName": "operation-3",
+    "timestamp": "2024-09-21T16:10:48.179655494Z",
+    "traceID": "fb0ff040-d904-4a80-9c73-29c9c589fdaa"
+  },
+  {
+    "duration": 38451028,
+    "parentSpanID": "539b20cb-a6a6-4265-a1af-dda4f78e1eb2",
+    "serviceName": "test-service",
+    "spanID": "4353a0c9-262d-4980-9b24-5935efb08f34",
+    "spanName": "nested-operation",
+    "timestamp": "2024-09-21T16:10:48.227655631Z",
+    "traceID": "fb0ff040-d904-4a80-9c73-29c9c589fdaa"
+  },
+  {
+    "duration": 86641150,
+    "parentSpanID": "825192da-eebc-49cc-bcac-78bb1e11338f",
+    "serviceName": "test-service",
+    "spanID": "539b20cb-a6a6-4265-a1af-dda4f78e1eb2",
+    "spanName": "operation-2",
+    "timestamp": "2024-09-21T16:10:48.179633833Z",
+    "traceID": "fb0ff040-d904-4a80-9c73-29c9c589fdaa"
+  },
+  {
+    "duration": 124909386,
+    "parentSpanID": "825192da-eebc-49cc-bcac-78bb1e11338f",
+    "serviceName": "test-service",
+    "spanID": "1acd4818-e6fa-4445-a1df-6010dce143ce",
+    "spanName": "operation-1",
+    "timestamp": "2024-09-21T16:10:48.179609868Z",
+    "traceID": "fb0ff040-d904-4a80-9c73-29c9c589fdaa"
+  },
+  {
+    "duration": 125161236,
+    "parentSpanID": "3e73ef3d-3fc4-45ec-95d3-b20cd0b6eac0",
+    "serviceName": "test-service",
+    "spanID": "825192da-eebc-49cc-bcac-78bb1e11338f",
+    "spanName": "root-operation",
+    "timestamp": "2024-09-21T16:10:48.179524098Z",
+    "traceID": "fb0ff040-d904-4a80-9c73-29c9c589fdaa"
+  },
+  {
+    "duration": 125281181,
+    "parentSpanID": null,
+    "serviceName": "test-service",
+    "spanID": "3e73ef3d-3fc4-45ec-95d3-b20cd0b6eac0",
+    "spanName": "GET http://localhost:8080/",
+    "timestamp": "2024-09-21T16:10:48.179487118Z",
+    "traceID": "fb0ff040-d904-4a80-9c73-29c9c589fdaa"
+  }
+]
