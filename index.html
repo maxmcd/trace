@@ -122,16 +122,40 @@
         try {
           const response = await fetch("/data");
           const data = await response.json();
-          firstTimestamp = Math.min(
-            ...data.map((span) => new Date(span.timestamp).getTime())
-          );
-          traces = data.map((span) => ({
-            ...span,
-            timestamp: new Date(span.timestamp).getTime(),
-            startTime:
-              (new Date(span.timestamp).getTime() - firstTimestamp) * 1000000,
-          }));
-          console.log(traces);
+          // Define a custom data structure to store date and nanoseconds
+          class Timestamp {
+            constructor(dateString) {
+              const [datePart, nanosPart] = dateString.split(".");
+              this.date = new Date(datePart);
+              this.nanos = parseInt(nanosPart.slice(0, -1));
+            }
+
+            compareTo(other) {
+              if (this.date.getTime() !== other.date.getTime()) {
+                return this.date.getTime() - other.date.getTime();
+              }
+              return this.nanos - other.nanos;
+            }
+
+            toNanos() {
+              return this.date.getTime() * 1e6 + this.nanos;
+            }
+          }
+
+          // Find the first timestamp
+          let firstTimestamp = data.reduce((min, span) => {
+            const current = new Timestamp(span.timestamp);
+            return min.compareTo(current) <= 0 ? min : current;
+          }, new Timestamp(data[0].timestamp));
+
+          traces = data.map((span) => {
+            const timestamp = new Timestamp(span.timestamp);
+            return {
+              ...span,
+              timestamp: timestamp.toNanos(),
+              startTime: timestamp.toNanos() - firstTimestamp.toNanos(),
+            };
+          });
           assignServiceColors();
           createSVG();
         } catch (error) {
@@ -159,12 +183,23 @@
 
         const depthMap = new Map();
         let maxDepth = 0;
-        let traceOffset = 0;
+        let lastTraceEndTime = 0;
 
         Array.from(traceGroups.entries())
           .sort(([, a], [, b]) => a[0].startTime - b[0].startTime)
           .forEach(([traceID, traceSpans]) => {
             const traceDepthMap = new Map();
+            let traceStartTime = Math.min(
+              ...traceSpans.map((span) => span.startTime)
+            );
+            let traceEndTime = Math.max(
+              ...traceSpans.map((span) => span.startTime + span.duration)
+            );
+
+            // Reset depth if there's no overlap with the previous trace
+            if (traceStartTime > lastTraceEndTime) {
+              maxDepth = 0;
+            }
 
             function getDepth(spanID) {
               if (traceDepthMap.has(spanID)) {
@@ -178,27 +213,35 @@
               }
 
               const parentDepth = getDepth(span.parentSpanID);
-              const depth = parentDepth + 1;
+              let depth = parentDepth + 1;
+
+              // Check for overlaps and adjust depth if necessary
+              const siblingSpans = traceSpans.filter(
+                (s) =>
+                  s.parentSpanID === span.parentSpanID &&
+                  s.spanID !== span.spanID
+              );
+              siblingSpans.sort((a, b) => a.startTime - b.startTime);
+
+              for (const sibling of siblingSpans) {
+                if (sibling.startTime < span.startTime) {
+                  depth = Math.max(depth, getDepth(sibling.spanID) + 1);
+                } else {
+                  break;
+                }
+              }
+
               traceDepthMap.set(spanID, depth);
               return depth;
             }
 
             traceSpans.forEach((span) => {
-              const depth = getDepth(span.spanID) + traceOffset;
+              const depth = getDepth(span.spanID);
               depthMap.set(span.spanID, depth);
               maxDepth = Math.max(maxDepth, depth);
             });
 
-            if (
-              traceOffset > 0 &&
-              traceSpans[0].startTime >
-                spans[spans.length - 1].startTime +
-                  spans[spans.length - 1].duration
-            ) {
-              traceOffset = 0;
-            } else {
-              traceOffset = maxDepth + 1;
-            }
+            lastTraceEndTime = traceEndTime;
           });
 
         return depthMap;
@@ -305,6 +348,7 @@
           rect.setAttribute("width", width);
           rect.setAttribute("height", lineHeight);
           rect.setAttribute("fill", serviceColors.get(span.serviceName));
+          rect.setAttribute("stroke", "black");
           rect.setAttribute("data-span", JSON.stringify({ ...span, depth }));
           svg.appendChild(rect);
 
@@ -339,6 +383,7 @@
             Duration: ${spanData.duration / 1000 / 1000}ms<br>
             Depth: ${spanData.depth}<br>
             StartTime: ${spanData.startTime}<br>
+            Timestamp: ${spanData.timestamp}<br>
             Trace ID: ${spanData.traceID}<br>
             Span ID: ${spanData.spanID}
           `;

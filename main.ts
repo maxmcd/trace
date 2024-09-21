@@ -35,7 +35,7 @@ function logSpanEnd(span: Span) {
   console.log(JSON.stringify(log));
 }
 
-async function newSpan<T>(name: string, fn: () => Promise<T> | T): Promise<T> {
+function newSpan<T>(name: string, fn: () => Promise<T> | T): Promise<T> {
   const parentContext = traceContext.getStore();
   const spanID = generateSpanID();
   const newContext = {
@@ -74,7 +74,7 @@ async function complexOperation(): Promise<string> {
 }
 
 // Root endpoint with nested spans
-app.get("/", async (c) => {
+app.get("/", (c) => {
   return newSpan("root-operation", async () => {
     const results = await Promise.all([
       newSpan("operation-1", async () => {
@@ -91,19 +91,6 @@ app.get("/", async (c) => {
       newSpan("operation-3", complexOperation),
     ]);
     return c.json({ message: "Root operation complete", results });
-  });
-});
-
-// Serve data from traces.json
-app.get("/data", async (c) => {
-  return newSpan("fetch-data", async () => {
-    try {
-      const data = await Deno.readTextFile("./traces3.json");
-      return c.json(JSON.parse(data));
-    } catch (error) {
-      console.error("Error reading traces.json:", error);
-      return c.json({ error: "Failed to read data" }, 500);
-    }
   });
 });
 
